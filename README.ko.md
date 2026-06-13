@@ -95,4 +95,4 @@ Kyung-Bo Kim, Dong-Gi Lee, Yun-Jeong Jang, Yeeun Kwak 팀 프로젝트입니다.
 
 ## 라이선스
 
-[MIT License](LICENSE)
+[MIT License](LICENSE) — © 2022 Kyung-Bo Kim, Dong-Gi Lee, Yun-Jeong Jang, Yeeun Kwak

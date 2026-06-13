@@ -105,4 +105,4 @@ Advisor: Prof. Ki-Ho Han
 
 ## License
 
-[MIT License](LICENSE)
+[MIT License](LICENSE) — © 2022 Kyung-Bo Kim, Dong-Gi Lee, Yun-Jeong Jang, Yeeun Kwak
