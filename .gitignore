@@ -1,0 +1,10 @@
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+*Zone.Identifier
+.vscode/
+
+# Arduino 빌드 산출물
+build/
+*.hex
