@@ -5,7 +5,7 @@
 A three-stage automated recycling-sorting prototype built with three Arduino Unos.
 It sorts incoming recyclables into **metal (cans) / heavy non-metal (glass) / light
 non-metal (plastic)**. Built as a team entry for our university's Nano Day
-competition (June 28, 2022).
+competition (November 28, 2022).
 
 <p align="center">
   <img src="assets/prototype.jpg" alt="Full view of the prototype" width="45%">
