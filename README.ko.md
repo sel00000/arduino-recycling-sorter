@@ -80,3 +80,7 @@ revised는 동작 로직을 그대로 두고 컴파일 오류 수정, `pulseIn` 
 - [회고 — 심사 Q&A와 트러블슈팅](docs/retrospective.ko.md)
 - [코드 리뷰 — 기술 분석과 개선 제안](docs/code-review.ko.md)
 - [참고 자료 모음](docs/references.ko.md)
+
+## 라이선스
+
+[MIT License](LICENSE)

@@ -88,3 +88,7 @@ arduino-cli (arduino:avr:uno).
 - [Retrospective — judges' Q&A and troubleshooting](docs/retrospective.md)
 - [Code review — technical analysis and improvement proposals](docs/code-review.md)
 - [References](docs/references.md)
+
+## License
+
+[MIT License](LICENSE)
