@@ -1,14 +1,18 @@
 /*
- * [정리본] 1단계 컨베이어 벨트
- * 원본(firmware/original/stage1_conveyor)의 동작 로직을 유지하면서 다음만 적용:
- *   - pulseIn 타임아웃 추가 (에코 유실 시 최대 1초 멈추던 문제 방지)
- *   - 측정 실패 시 벨트 상태를 바꾸지 않음 (원본은 실패가 거리 0으로 읽힘)
- *   - 매직 넘버 상수화, 중복 측정 코드 함수화, 미사용 변수(pos) 제거
- *   - 트리거 전 2µs LOW 정착 추가(HC-SR04 권장 절차), Serial 출력 포맷 가독성 개선
+ * [Revised] Stage 1 conveyor belt
+ * Original behavior preserved; only the following changes applied:
+ *   - pulseIn timeout added (prevents up to 1-second stall per sensor on echo loss)
+ *   - On measurement failure, belt state is not changed (original code read failure
+ *     as distance 0)
+ *   - Magic numbers replaced with named constants; duplicated measurement code
+ *     extracted into a function; unused variable (pos) removed
+ *   - 2 µs LOW settling before trigger added (recommended HC-SR04 procedure);
+ *     Serial output format made more readable
  *
- * 하드웨어: HC-SR04 초음파 센서 x2, 연속회전 서보 x1 (벨트 구동)
- * 동작(원본 그대로): 두 센서가 모두 기준 거리 이내로 물체를 감지하면 서보 0(벨트
- * 구동), 하나라도 기준 밖이면 서보 90(연속회전 서보 기준 정지).
+ * Hardware: 2× HC-SR04 ultrasonic sensors, 1× continuous-rotation servo (belt drive)
+ * Behavior (unchanged from original): when both sensors detect an object within their
+ * respective thresholds, servo goes to 0 (belt running); if either is out of range,
+ * servo goes to 90 (stop for a continuous-rotation servo).
  */
 #include <Servo.h>
 
@@ -20,7 +24,7 @@ const int SERVO_PIN = 9;
 
 const long DIST1_THRESHOLD_CM = 10;
 const long DIST2_THRESHOLD_CM = 20;
-const unsigned long ECHO_TIMEOUT_US = 30000UL;  // 약 5m 탐지 거리(왕복 경로 10m)에 해당
+const unsigned long ECHO_TIMEOUT_US = 30000UL;  // ~5 m detection range (10 m round-trip path)
 
 Servo beltServo;
 
@@ -31,8 +35,8 @@ long readDistanceCm(int trigPin, int echoPin) {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   unsigned long duration = pulseIn(echoPin, HIGH, ECHO_TIMEOUT_US);
-  if (duration == 0) return -1;  // 타임아웃: 측정 실패
-  return (long)(duration / 58.2);  // 원본의 환산 계수 유지 (정확값 ≈ 58.82 µs/cm)
+  if (duration == 0) return -1;  // timeout: measurement failed
+  return (long)(duration / 58.2);  // conversion factor kept from original (exact value ≈ 58.82 µs/cm)
 }
 
 void setup() {
@@ -58,7 +62,7 @@ void loop() {
   Serial.println(" cm");
 
   if (distance1 < 0 || distance2 < 0) {
-    return;  // 측정 실패 사이클: 벨트 상태 유지
+    return;  // measurement failed this cycle: keep belt state unchanged
   }
 
   if (distance1 > DIST1_THRESHOLD_CM || distance2 > DIST2_THRESHOLD_CM) {

@@ -1,79 +1,91 @@
-# 코드 리뷰 — 기술 분석과 개선 제안
+[English](code-review.md) | [한국어](code-review.ko.md)
 
-대회 당시 코드(`firmware/original/`)를 사후 분석한 문서입니다. `firmware/revised/`에
-반영한 수정과, 코드에는 반영하지 않고 제안으로만 남긴 개선을 구분해 정리합니다.
+# Code Review — Technical Analysis and Improvement Proposals
 
-## 스케치별 분석
+A post-mortem analysis of the competition code (`firmware/original/`). Changes that
+were applied in `firmware/revised/` are distinguished from improvements left as
+proposals only.
 
-### 1단계 — stage1_conveyor
+## Per-Sketch Analysis
 
-**동작**: 초음파 2개로 거리를 측정해, 둘 다 기준(10cm/20cm) 이내로 물체가 감지되면
-서보 0(벨트 구동), 하나라도 기준 밖이면 서보 90(연속회전 서보 기준 정지).
+### Stage 1 — stage1_conveyor
 
-| # | 문제 | 처리 |
+**Behavior**: Two ultrasonic sensors measure distance; if both detect an object within
+their respective thresholds (10 cm / 20 cm), the servo goes to 0 (belt running);
+if either is out of range, the servo goes to 90 (stop for a continuous-rotation servo).
+
+| # | Issue | Resolution |
 |---|---|---|
-| 1 | `pulseIn(echo, HIGH)`에 타임아웃이 없어 에코 유실 시 기본 1초씩 통째로 대기. 센서가 2개 연쇄라 한 사이클이 2초 이상 멈출 수 있음 — "모터가 반응이 없다"고 느끼게 한 유력 원인 | revised: 30ms 타임아웃 + 실패 시 벨트 상태 유지 |
-| 2 | 단발 측정이라 노이즈에 그대로 노출. 튄 값 한 번에 벨트가 들썩일 수 있음 | 제안: 3회 측정 중앙값 필터 |
-| 3 | 연속회전 서보는 개체마다 정지점이 90에서 약간 어긋나 `write(90)`에도 벨트가 천천히 기는 경우가 있음 | 제안: `writeMicroseconds()`로 정지 펄스 폭 트림 |
-| 4 | `int pos = 0;` 미사용 변수 | revised: 제거 |
+| 1 | `pulseIn(echo, HIGH)` has no timeout — on echo loss it blocks for the default 1 second. With two sensors in series, one cycle can stall for 2+ seconds, the likely cause of "the motor feels unresponsive" | revised: 30 ms timeout + keep belt state on failure |
+| 2 | Single-shot measurement exposes the system to noise; one spurious reading can jerk the belt | proposal: 3-sample median filter |
+| 3 | Continuous-rotation servos have a deadband that shifts slightly per unit — `write(90)` may still creep slowly | proposal: use `writeMicroseconds()` to trim the stop pulse width |
+| 4 | `int pos = 0;` unused variable | revised: removed |
 
-### 2단계 — stage2_metal_sorter (초안)
+### Stage 2 — stage2_metal_sorter (draft)
 
-**컴파일 오류 3건 (복합 원인 포함)** — 이 초안이 컴파일되지 않는 이유:
+**3 compile errors (with compound causes)** — why this draft does not compile:
 
-| 위치 | 코드 | 문제 |
+| Location | Code | Problem |
 |---|---|---|
-| `setup()` | `pinMode(senor_pin, INPUT)` | `senor_pin` 미선언 (`#define senor 4`만 존재) |
-| `setup()` | `tap_servo.attach(tap_servo_pin)` | `tap_servo`는 `#define tap_servo 5` 핀 매크로라 `.attach()` 호출 불가, `tap_servo_pin`도 미선언 |
-| `loop()` | `digitalRead(sensor)` | `sensor` 미선언 (`senor`의 오타) |
+| `setup()` | `pinMode(senor_pin, INPUT)` | `senor_pin` undeclared (only `#define senor 4` exists) |
+| `setup()` | `tap_servo.attach(tap_servo_pin)` | `tap_servo` is a `#define tap_servo 5` pin macro — `.attach()` cannot be called on it; `tap_servo_pin` is also undeclared |
+| `loop()` | `digitalRead(sensor)` | `sensor` undeclared (typo of `senor`) |
 
-같은 대상을 `senor`/`sensor`/`senor_pin`/`tap_servo`/`tap_servo_pin` 다섯 이름으로
-부른 것이 원인입니다. revised에서는 핀을 `SENSOR_PIN`/`TAP_SERVO_PIN` 상수로
-통일하고 서보를 `doorServo`/`tapServo` 객체로 분리했습니다.
+The root cause is the same object being named five different ways: `senor` / `sensor` /
+`senor_pin` / `tap_servo` / `tap_servo_pin`. In revised, pin numbers were unified as
+`SENSOR_PIN` / `TAP_SERVO_PIN` constants and the servos split into `doorServo` /
+`tapServo` objects.
 
-**로직 측면**:
-1. 측정 실패(에코 유실) 시 `duration=0 → distance=0 < 10`이라 **문이 열린 상태로
-   고정**됩니다. 실패 모드가 "개방"인 것은 안전하지 않습니다. → revised: 타임아웃
-   시 닫힘 유지
-2. `if (val==0) {...} if (val==1) {...}`는 결과적으로 if/else와 같지만 의도가
-   드러나지 않습니다. → revised: if/else로 명확화
-3. 유도형 근접센서는 출력 방식(NPN: 감지 시 LOW / PNP: 감지 시 HIGH)에 따라
-   `val==0`의 의미가 뒤집히고, 24V 산업용 센서는 분압·레벨 변환이 필요합니다.
-   사용한 모듈 기준의 배선 문서화가 함께 남았어야 했습니다.
+**Logic issues**:
+1. On measurement failure (echo timeout), `duration=0 → distance=0 < 10`, so the
+   **door stays open**. A failure mode of "open" is not safe. → revised: keep door
+   closed on timeout
+2. `if (val==0) {...} if (val==1) {...}` is functionally equivalent to if/else but
+   the intent is not clear. → revised: changed to if/else
+3. For inductive proximity sensors, the meaning of `val==0` flips depending on output
+   type (NPN: LOW when metal detected / PNP: HIGH when metal detected), and 24 V
+   industrial sensors need a voltage divider or level shifter. Wiring documentation
+   specific to the module used should have been preserved alongside the code.
 
-### 3단계 — stage3_weight_sorter
+### Stage 3 — stage3_weight_sorter
 
-**기록 상태**: 원문이 `loop()` 내부에서 끊겨 닫는 중괄호가 유실 → revised에서 복원.
+**Record state**: The source was cut off inside `loop()`, losing the closing brace →
+restored in revised.
 
-참고: 3단계의 Serial 속도는 38400으로 1·2단계(115200)와 다릅니다. 보드별 Serial
-모니터 설정 시 유의하세요.
+Note: Stage 3 runs Serial at 38400 baud, unlike Stages 1 and 2 (115200). Remember
+to set each board's Serial Monitor to the correct baud rate.
 
-| # | 문제 | 처리 |
+| # | Issue | Resolution |
 |---|---|---|
-| 1 | `scale.get_units(5)`는 HX711 기본 10SPS 기준 약 0.5초 블로킹. 무거운 물체 경로는 delay 5회와 합쳐 사이클이 약 5.6초 — 처리량의 직접적 상한 | 제안: 표본 수 축소 또는 80SPS 모드, 상태기계화 |
-| 2 | 연쇄 `delay(1000)`은 서보 떨림을 가리기 위한 완충(작성자 기록). 근본 원인은 전원일 가능성이 높음 — MG996R급은 스톨 시 약 2.5A까지 끌어갈 수 있는데 우노 5V 레귤레이터로는 부족 | 제안: 외부 5~6V 전원 + 공통 GND + 470~1000µF 커패시터 |
-| 3 | 계수 23600이 기준 분동 없이 설정되어 측정 단위가 불명확 (심사 Q7) | 제안: ① 빈 저울 `tare()` ② 기준 분동(예: 1.000kg) 올림 ③ `get_units()`가 1.000이 될 때까지 계수 조정 |
-| 4 | 측정값 0.5 이하는 어떤 분기에도 안 걸려 **배출되지 않음**. 빈 페트병(수십 g)이 주 대상임을 감안하면 캘리브레이션 부재와 결합해 임계값 실효성이 검증되지 않음 | revised: 동작은 원본 유지, 주석으로 한계 명시 |
+| 1 | `scale.get_units(5)` blocks for ~0.5 s at HX711's default 10 SPS. The heavy-item path adds 5 more `delay(1000)` calls, making one cycle ~5.6 s — a hard ceiling on throughput | proposal: reduce sample count or enable 80 SPS mode; refactor to state machine |
+| 2 | Chained `delay(1000)` was a deliberate buffer for servo jitter (author's note). Root cause is likely the power supply — MG996R-class servos can draw ~2.5 A at stall, exceeding the Uno's 5 V regulator | proposal: external 5–6 V supply + common GND + 470–1000 µF capacitor |
+| 3 | Scale factor 23600 was set without a calibration weight, so the measurement unit is undefined (judges' Q7) | proposal: ① `tare()` with empty scale ② place reference/calibration weight (e.g. 1.000 kg) ③ adjust factor until `get_units()` reads 1.000 |
+| 4 | Readings ≤ 0.5 match no branch, so the item **is never ejected**. Given that empty PET bottles (tens of grams) are a primary target, the threshold validity is unconfirmed without calibration | revised: kept original behavior, added comment noting the limitation |
 
-## 아키텍처 분석
+## Architecture Analysis
 
-우노 3대가 **통신 없이 독립 동작**합니다. 단계 간 동기화 수단이 없어 물체가 이전
-단계 처리 중에 도착하면 충돌하며, 이를 각 단계의 긴 delay로 회피했습니다. 작동은
-했지만 처리량과 신뢰성을 모두 희생한 트레이드오프입니다.
+The three Unos **operate independently with no inter-board communication**. There is
+no inter-stage synchronization, so if an item arrives while the previous stage is
+still processing, a collision occurs — avoided here by making each stage's delays
+long. It worked, but it was a trade-off that sacrificed both throughput and
+reliability.
 
-## 개선 로드맵 (우선순위순)
+## Improvement Roadmap (priority order)
 
-1. **delay 제거 — `millis()` 상태기계**: 각 스케치를 대기/측정/동작 상태로
-   재구성하면 센서 폴링과 서보 동작이 겹칠 수 있어 반응성이 살아납니다.
-2. **서보 전원 분리**: 위 3단계 문제 2 항목. 떨림 완충용 delay를 걷어낼 수 있는
-   전제 조건입니다.
-3. **보드 간 핸드셰이크**: 디지털 핀 1개를 busy 신호로 공유하기만 해도 단계 충돌이
-   사라집니다. 더 나아가면 우노 3대를 Mega 1대로 통합하거나 I2C
-   마스터-슬레이브로 묶을 수 있습니다.
-4. **종이 분류 — 저비용 비전**: ESP32-CAM(1만 원대)에 TensorFlow Lite Micro 또는
-   Edge Impulse로 학습한 경량 CNN을 올리면 분광 센서 없이 종이/페트 구분이
-   가능합니다. 당시 "이미지 센서로 구분은 되는데 모터 연동이 안 됐다"는 문제는
-   분류 보드와 구동 보드를 분리하고 시리얼로 분류 결과만 넘기는 구조로 풀 수
-   있습니다.
-5. **형상 정규화**: 투입 직후 압축 기구(산업 선별장의 압축 공정과 같은 원리)로
-   형상 불균일 문제를 구조적으로 해결합니다.
+1. **Remove delays — `millis()` state machine**: Restructuring each sketch into
+   idle / measure / act states allows sensor polling and servo motion to overlap,
+   restoring responsiveness.
+2. **Separate servo power supply**: Prerequisite for removing the jitter-buffer
+   delays (Issue 2 in Stage 3 above).
+3. **Inter-board handshake**: Sharing even a single digital pin as a busy signal
+   eliminates inter-stage collisions. Going further, the three Unos could be
+   consolidated into a single Mega, or linked via I2C master–slave.
+4. **Paper classification — low-cost vision**: Mounting a lightweight CNN trained
+   with TensorFlow Lite Micro or Edge Impulse on an ESP32-CAM (~$5) enables
+   paper / PET classification without a spectroscopic sensor. The problem at the time
+   — "image sensor could classify, but motor integration didn't work" — can be solved
+   by separating the classification board from the drive board and passing only the
+   classification result over serial.
+5. **Shape normalization**: A compactor immediately after the input (the same
+   principle as the compaction stage in industrial sorting plants) structurally
+   eliminates shape variance.

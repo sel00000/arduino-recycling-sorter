@@ -1,7 +1,9 @@
 /*
- * [원본 기록] 3단계 무게 분류 — 나노데이 경진대회 제출 당시 코드
- * 기록 원문이 loop()가 닫히기 전에 끊겨 닫는 중괄호가 유실된 상태 그대로 보존합니다.
- * (이 파일은 컴파일되지 않습니다.) 복원·정리본: firmware/revised/stage3_weight_sorter/
+ * [Original record] Stage 3 weight sorting — code as submitted to the Nano Day
+ * competition. The source record was cut off before loop() was closed, losing the
+ * closing brace; preserved in that truncated state (this file does not compile).
+ * The Korean comments below are part of the historical record.
+ * Restored/cleaned-up version: firmware/revised/stage3_weight_sorter/
  */
 #include "HX711.h"
 #include <Servo.h>

@@ -1,28 +1,31 @@
 /*
- * [정리본] 2단계 금속 분리 (유도형 근접센서)
- * 원본 초안(firmware/original/stage2_metal_sorter)은 컴파일되지 않아 다음을 수정:
- *   - senor / sensor / senor_pin 혼용 → SENSOR_PIN 상수로 통일
- *   - 핀 매크로 tap_servo에 .attach()를 호출하던 오류 → Servo 객체(tapServo)로 분리
- *   - pulseIn 타임아웃 추가. 타임아웃 시 문 닫힘 유지
- *     (원본은 측정 실패가 거리 0으로 읽혀 문이 열린 상태로 고정됨)
- *   - val==0 / val==1 두 if문 → 등가인 if/else로 명확화
- *   - 원본의 echo 핀 LOW 쓰기 제거 (INPUT 핀에는 불필요한 동작)
- * 그 외 게이트/분기 로직과 각도·딜레이 값은 초안 그대로.
+ * [Revised] Stage 2 metal separation (inductive proximity sensor)
+ * The original draft (firmware/original/stage2_metal_sorter) did not compile;
+ * the following fixes were applied:
+ *   - Mixed identifiers senor / sensor / senor_pin → unified as SENSOR_PIN constant
+ *   - Calling .attach() on pin macro tap_servo → split into Servo object (tapServo)
+ *   - pulseIn timeout added; on timeout the door stays closed
+ *     (original code read failure as distance 0, leaving door stuck open)
+ *   - Two separate if(val==0)/if(val==1) blocks → equivalent if/else for clarity
+ *   - Removed writing LOW to echo pin (unnecessary operation on an INPUT pin)
+ * All other gate/diverter logic and angle/delay values kept from the draft.
  *
- * 하드웨어: HC-SR04 초음파 x1(투입 감지), 유도형 근접센서 x1(디지털 출력), 서보 x2
- * 동작(초안 그대로): 투입구 10cm 이내 감지 시 문 서보 100도(열림), 아니면 180도(닫힘).
- * 근접센서 LOW(금속 감지) 시 분기 서보 0도, HIGH 시 180도.
+ * Hardware: 1× HC-SR04 ultrasonic (inlet detection), 1× inductive proximity sensor
+ *           (digital output), 2× servos
+ * Behavior (unchanged from draft): object detected within 10 cm of inlet → door servo
+ * to 100° (open), otherwise 180° (closed). Proximity sensor LOW (metal detected) →
+ * diverter servo to 0°, HIGH → 180°.
  */
 #include <Servo.h>
 
 const int TRIG_PIN = 7;
 const int ECHO_PIN = 6;
-const int SENSOR_PIN = 4;      // 유도형 근접센서 디지털 출력 (NPN 기준: 감지 시 LOW)
-const int DOOR_SERVO_PIN = 2;  // 투입구 문
-const int TAP_SERVO_PIN = 5;   // 금속/비금속 분기
+const int SENSOR_PIN = 4;      // inductive proximity sensor digital output (NPN: LOW when metal detected)
+const int DOOR_SERVO_PIN = 2;  // inlet door
+const int TAP_SERVO_PIN = 5;   // metal / non-metal diverter
 
 const long DOOR_OPEN_DISTANCE_CM = 10;
-const unsigned long ECHO_TIMEOUT_US = 30000UL;  // 약 5m 탐지 거리(왕복 경로 10m)에 해당
+const unsigned long ECHO_TIMEOUT_US = 30000UL;  // ~5 m detection range (10 m round-trip path)
 
 const int DOOR_OPEN_ANGLE = 100;
 const int DOOR_CLOSED_ANGLE = 180;
@@ -54,7 +57,7 @@ void loop() {
   int doorAngle;
   if (duration > 0 && distance < DOOR_OPEN_DISTANCE_CM) {
     doorAngle = DOOR_OPEN_ANGLE;
-    Serial.println("문이 열렸습니다.");
+    Serial.println("문이 열렸습니다.");  // Output string kept as-is to preserve original behavior ("The door is open")
     delay(1000);
   } else {
     doorAngle = DOOR_CLOSED_ANGLE;

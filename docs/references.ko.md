@@ -1,31 +1,31 @@
 [English](references.md) | [한국어](references.ko.md)
 
-# References
+# 참고 자료 모음
 
-Original list of resources consulted during the project, transcribed as recorded at
-the time. Link survival is not guaranteed.
+프로젝트 진행 중 조사한 자료의 원본 목록입니다. 당시 기록 그대로 옮겼으며, 링크
+생존 여부는 보장하지 않습니다.
 
-## Sensors
+## 센서
 
-### Image sensor
+### 이미지 센서
 - 아두이노에서 이미지 센서를 이용한 색상 트래킹 팬틸트 구현 (PinkWink) — https://pinkwink.kr/1150
 
-### Frequency (sound) sensor
+### 주파수(사운드) 센서
 - 아두이노와 사운드 센서를 이용한 주파수 변환(FFT) — https://youtube.com/shorts/Ipk9SH9DfGQ?feature=share
 
-### Sound detection sensor
+### 소리감지 센서
 - 아두이노 코딩 #11 소리감지센서 (공대선배) — https://youtu.be/N6v8owKJz8M
 
-### Ultrasonic sensor
+### 초음파 센서
 - 아두이노 다중 초음파센서 사용 (친절한삐삐씨) — https://m.blog.naver.com/vitro6273/221200479936
 
-### Human presence sensor
+### 인체 감지 센서
 - 인체 감지센서로 침입자 경보 부저 만들기 (ICbanQ) — https://blog.naver.com/icbanq/222735710606
 
-### Weight sensor (load cell)
+### 무게 감지 센서 (로드셀)
 - 로드셀 무게감지 센서로 무게 측정하기 (로보다인시스템) — https://m.blog.naver.com/eduino/221078931222
 
-### Capacitive sensor
+### 정전용량 센서
 - [디스플레이 톺아보기] TSP(터치스크린패널)의 종류와 원리 (삼성디스플레이 뉴스룸) — https://news.samsungdisplay.com/12710
 - 정전용량 터치센서의 원리 (tonykwun) — https://m.blog.naver.com/tonykwun/120175645334
 - 정전용량 센서 원리 (안쓰리김원) — https://m.blog.naver.com/ysahn2k/220147025746
@@ -34,7 +34,7 @@ the time. Link survival is not guaranteed.
 - 축전기 (위키백과) — https://ko.wikipedia.org/wiki/축전기
 - 정전용량형 근접센서와 음료수 캔으로 악기 만들기 (러봇랩) — https://youtu.be/ZjHH4AZI19s
 
-### Proximity sensors — general
+### 근접센서 일반
 - 근접센서(Proximity sensors) (Technicus) — https://blog.naver.com/technicus81/222855634213
 - 정전 용량형 센서란? — https://avtotachki.com/ko/chto-takoe-emkostnyj-datchik/
 - Testing a capacitive proximity sensor (Curious Scientist) — https://youtu.be/F0YeykVvEQ4
@@ -50,13 +50,13 @@ the time. Link survival is not guaranteed.
 - 자동화센서 11.4~11.7 (bbkim전자) — https://youtu.be/zAZ2H2QhHYM
 - 근접 센서 (위키백과) — https://ko.wikipedia.org/wiki/근접_센서
 
-### Inductive proximity sensor
+### 유도형 근접센서
 - 금속탐지기 작동 원리 (미국아재 교실) — https://www.youtube.com/watch?v=RMSqL3DOiO8
 - 유도형(고주파 발진형) 근접 센서 설명 (픽써엘) — https://youtu.be/V86LwSNa1FE
 - 와전류가 발생하는 구조 (임장성) — https://m.blog.naver.com/jsrhim516/221143080811
 - 와전류 손실(철손)이란? (젠지노 창고) — https://yyxx.tistory.com/127
 
-## Structure
+## 구조
 - 자판기가 작동하는 원리/내부구조 — https://youtu.be/j3927pdgcTM
 - AI 기반 똑똑한 분리수거기 (AI타임스) — https://youtu.be/8M4FtqOvVXQ
 - 못쓰는 가전제품 배출 및 처리 과정 — https://youtu.be/CokoCupngyI
@@ -66,7 +66,7 @@ the time. Link survival is not guaranteed.
 - 분리수거 자동화 시스템 Recyclear 분류 영상 — https://youtu.be/IsF19la8Tis
 - 과학상자에서 리미트 스위치를 이용한 모터 동작 범위 제어 — https://youtu.be/OOMzq58qVvc
 
-### Conveyor structure
+### 컨베이어 구조
 - 과학상자로 탱크 만들기 — https://youtu.be/Qe5bKgvNuy4
 - How To Make Stickers (Mahalo my Dude) — https://youtu.be/GlecDUdZdkE
 - Can Lego Play the Drums? (Brick Technology) — https://youtu.be/BlaY8kSTO28
@@ -75,10 +75,10 @@ the time. Link survival is not guaranteed.
 - How to Make a Conveyor Belt System at Home (Easy HomeMade Projects) — https://youtu.be/o7VVmtX7SKs
 - How to Build a Belt Conveyor (C-Trak Conveyors) — https://youtu.be/TET4ksZ1b2g
 
-## Soldering and wiring
+## 납땜·배선
 - Arduino Bluetooth control car (L293D, HC-05) (Make DIY) — https://youtu.be/hI0UBvpuRTw
 
-## Motors (servo)
+## 모터 (서보)
 - 서보모터 구성, 서보드라이브가 분리된 이유 (공장자동화TV) — https://youtu.be/CQgS90fcY10
 - Arduino Servo Motor MG996R (올마코딩) — https://youtu.be/EXRFdmsEK8k
 - 왜 서보 모터가 움직이지 않을까? L293D 모터쉴드 (H_World) — https://youtu.be/VoQCWI9ojsc
@@ -89,9 +89,9 @@ the time. Link survival is not guaranteed.
 - 서보모터가 이상하게 작동해요 (아토플래닛) — https://m.blog.naver.com/dokkosam/221387857799
 - Servo MG996R, Arduino Uno (Noc A) — https://youtu.be/wszxVSf1d1w
 
-## Timing (delay / millis)
+## 시간 처리 (delay/millis)
 - 시간 관련 함수 설명, delay 없이 LED Blink (juahnpop) — https://juahnpop.tistory.com/75
 - 시간 관련 함수 delay()/millis() — https://blog.naver.com/yuyyulee/220315430768
 
-## Coding general
+## 코딩 일반
 - 코딩스탠다드: 함수 작성 (포프TV) — https://youtu.be/rbWSTXBYNFA

@@ -1,6 +1,7 @@
 /*
- * [원본 기록] 1단계 컨베이어 벨트 — 나노데이 경진대회 제출 당시 코드
- * 수정 없이 그대로 보존한 기록입니다. (컴파일 가능) 정리본: firmware/revised/stage1_conveyor/
+ * [Original record] Stage 1 conveyor belt — code as submitted to the Nano Day
+ * competition, preserved unmodified (it compiles). The Korean comments below are
+ * part of the historical record. Cleaned-up version: firmware/revised/stage1_conveyor/
  */
 #include <Servo.h>
 Servo servo1;

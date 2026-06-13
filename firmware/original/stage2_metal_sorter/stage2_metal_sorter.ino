@@ -1,8 +1,10 @@
 /*
- * [원본 기록] 2단계 금속 분리 — 본인이 작성한 초안
- * (대회에서 실제로 동작한 최종본은 팀원이 완성했으며 기록이 남아 있지 않습니다.)
- * 이 초안은 변수명 불일치(senor/sensor/senor_pin/tap_servo_pin)와 tap_servo 사용
- * 오류로 컴파일되지 않는 상태 그대로 보존합니다. 정리본: firmware/revised/stage2_metal_sorter/
+ * [Original record] Stage 2 metal separation — my draft. (The version that actually
+ * ran at the competition was completed by a teammate; that record is lost.)
+ * Preserved as-is: it does NOT compile, due to mismatched identifiers
+ * (senor/sensor/senor_pin/tap_servo_pin) and calling .attach() on the tap_servo
+ * macro. The Korean comments below are part of the historical record.
+ * Cleaned-up version: firmware/revised/stage2_metal_sorter/
  */
 #include<Servo.h> // 서보모터 동작을 위한 서보 라이브러리 불러오기
 

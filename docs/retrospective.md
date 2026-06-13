@@ -1,57 +1,68 @@
-# 회고 — 심사 Q&A와 트러블슈팅
+[English](retrospective.md) | [한국어](retrospective.ko.md)
 
-교내 나노데이 경진대회 출품 후 받은 질문과 당시의 대응, 트러블슈팅 기록을 정리한 문서입니다.
+# Retrospective — Judges' Q&A and Troubleshooting
 
-## 심사 Q&A
+Questions received after submitting to the Nano Day competition, how we responded at
+the time, and troubleshooting notes.
 
-**Q1. 종이는 왜 구분하지 못하나요?**
-재질을 직접 판별하려면 특정 주파수의 빛을 쏘아 반사 특성으로 구분하는 분광 방식
-센서가 필요한데, 학부 프로젝트 예산으로는 감당할 수 없는 가격이었습니다. 대안으로
-이미지 센서 + CNN 분류를 검토해 종이/페트병 구분 가능성까지는 확인했지만, 분류
-결과에 맞춰 모터를 제어하는 연동이 해결되지 않아 최종 구성에서 제외했습니다.
+## Judges' Q&A
 
-**Q2. 투입물 모양이 항상 같지 않은데요?**
-맞습니다. 한 가지 형상만 안정적으로 통과하는 구조로 만든 것이 이 시제품의 가장 큰
-단점입니다. 투입 직후 압축 기구로 일정한 형태로 만든 뒤 내려보내면 해결할 수
-있다고 판단했습니다.
+**Q1. Why can't it classify paper?**
+Identifying material directly requires a spectroscopic sensor that fires light at a
+specific frequency and classifies by reflection characteristics — priced far beyond
+an undergraduate project budget. As an alternative we investigated an image sensor +
+CNN classifier and confirmed that distinguishing paper from PET bottles was feasible,
+but the motor-control integration that would act on the classification result did not
+work, so it was excluded from the final system.
 
-**Q3. 상단만 금속인 플라스틱 캔은요?**
-떨어지는 자세에 따라 근접센서에 금속부가 걸리기도 하고 안 걸리기도 해서 사실상
-무작위로 분류됩니다. 이 센서 구성으로는 해결이 어렵고, 배출자가 분리해서 넣거나
-비전 기반 분류가 필요합니다.
+**Q2. The shape of incoming items isn't always the same, is it?**
+Correct. The biggest shortcoming of this prototype is that the structure only handles
+one shape reliably. We concluded that the problem could be solved by passing each item
+through a compactor immediately after input to standardize its form before it travels
+down the line.
 
-**Q4. 음료가 남은 용기는 유리로 인식하겠네요?**
-네. 무게 기반 분류의 본질적 한계이며, 머신러닝(비전) 분류로 풀어야 하는
-문제입니다.
+**Q3. What about plastic cans that only have a metal top?**
+Depending on the orientation when the item falls, the metal portion may or may not
+pass in front of the proximity sensor — so in practice they are sorted randomly. This
+cannot be resolved with the current sensor configuration; it would require users to
+pre-separate them, or a vision-based classifier.
 
-**Q5. 큰 페트병은 구별 못 하나요?**
-현재 구조로는 못 합니다. 다만 대규모로 사업화한다면 크기별 투입 경로를 두는
-구조로 대응할 수 있다고 답했습니다.
+**Q4. A container with liquid left inside would register as glass, wouldn't it?**
+Yes. This is an inherent limitation of weight-based sorting and would have to be
+addressed with machine-learning (vision) classification.
 
-**Q6. 동시에 여러 개는 못 넣나요?**
-컨베이어 벨트가 물체를 하나씩 떨어뜨려 직렬화하는 설계였습니다. 벨트를 길게
-만들면 사용자 입장에서는 한 번에 여러 개를 올려놓고 갈 수 있습니다. 다만 낙하
-타이밍 조정을 일정 안에 끝내지 못해 대회 시점에는 한 개씩 투입하는 방식으로
-시연했습니다.
+**Q5. Can't it handle large PET bottles?**
+Not with the current structure. We answered that if the system were scaled up
+commercially, adding separate input paths by size would address this.
 
-**Q7. 무게를 kg/g 단위로 변환하지 않았나요?**
-하지 않았습니다. 로드셀 계수(23600)를 기준 분동으로 캘리브레이션하지 않아 임계값
-0.5/1.0은 상대값이었습니다. 표준 절차는 [code-review.md](code-review.md)의
-캘리브레이션 항목을 참고하세요.
+**Q6. Can't you put in several items at once?**
+The conveyor belt was designed to serialize items by dropping them one at a time.
+Making the belt longer would let a user load several items and walk away. However,
+we were unable to finish tuning the drop timing within the project schedule, so at
+the competition we demonstrated with one item inserted at a time.
 
-## 트러블슈팅 기록
+**Q7. Didn't you convert the weight into kg or g units?**
+We did not. The load-cell scale factor (23600) was not calibrated against a reference
+weight, so the thresholds 0.5 / 1.0 were relative values. For the standard calibration
+procedure, see the calibration section in [code-review.md](code-review.md).
 
-### 서보 떨림
-조건문 분기 후 서보가 심하게 떨리는 문제가 있어, 동작 사이에 1초 간격의 delay를
-넣어 완충하고 매 사이클 원위치로 복귀시키는 방식으로 대응했습니다(3단계 코드의
-연쇄 delay가 그 흔적). 당시 조사한 자료들로 미루어 보면 근본 원인은 우노 5V 핀으로
-MG996R급 서보를 구동하며 생긴 전류 부족과 GND 공통화 문제였을 가능성이 높습니다.
-외부 전원 + 공통 GND + 전원단 커패시터가 정석적인 해결책입니다.
+## Troubleshooting Notes
 
-### 2단계 초음파 센서 제외
-금속 분리 단계에 투입 감지용 초음파 게이트를 설계했으나(초안 코드에 반영),
-구조물과의 간섭 때문에 최종 기체에서는 제외했습니다.
+### Servo jitter
+After a conditional branch, the servos vibrated severely. We worked around it by
+inserting 1-second delays between motions and returning to the home position every
+cycle (the chain of delays in the Stage 3 code is the trace of that workaround).
+Based on research at the time, the likely root cause was insufficient current and a
+missing shared GND from driving MG996R-class servos off the Uno's 5 V pin. The
+standard fix is an external power supply, a common GND, and a decoupling capacitor
+on the power rail.
 
-### CNN 분류 시도와 중단
-이미지 센서로 종이/페트병 구분 가능성까지는 확인했지만, 분류 결과에 따라 모터를
-구동하는 연동이 동작하지 않아 대회 일정상 중단했습니다.
+### Stage 2 ultrasonic sensor removed
+We designed an ultrasonic gate to detect items entering the metal-separation stage
+(reflected in the draft code), but it was removed from the final build due to
+mechanical interference with the enclosure.
+
+### CNN classifier attempt abandoned
+We confirmed that an image sensor could distinguish paper from PET bottles, but the
+integration that would drive the motor based on the classification result did not
+work, so we abandoned it against the competition deadline.

@@ -1,80 +1,90 @@
-# 아두이노를 활용한 자동화 분리수거 시스템
+[English](README.md) | [한국어](README.ko.md)
 
-아두이노 우노 3대로 구현한 3단계 자동 분리수거 시제품입니다. 투입된 재활용
-쓰레기를 **금속(캔) / 무거운 비금속(유리) / 가벼운 비금속(플라스틱)** 으로 자동
-분류합니다. 교내 나노데이 경진대회(2022년 6월 28일) 팀 출품작입니다.
+# Arduino-Based Automated Recycling Sorter
+
+A three-stage automated recycling-sorting prototype built with three Arduino Unos.
+It sorts incoming recyclables into **metal (cans) / heavy non-metal (glass) / light
+non-metal (plastic)**. Built as a team entry for our university's Nano Day
+competition (June 28, 2022).
 
 <p align="center">
-  <img src="assets/prototype.jpg" alt="시제품 전체 모습" width="45%">
-  <img src="assets/demo.png" alt="대회 시연 현장" width="28%">
+  <img src="assets/prototype.jpg" alt="Full view of the prototype" width="45%">
+  <img src="assets/demo.png" alt="Demo at the competition" width="28%">
 </p>
 
-## 시스템 구성 — 3단계 분류 파이프라인
+## System Overview — Three-Stage Sorting Pipeline
 
 ```
-투입 → [1단계] 컨베이어 벨트 → [2단계] 금속 분리 게이트 → [3단계] 무게 분류 → 분리함 3개
+Input → [Stage 1] Conveyor belt → [Stage 2] Metal separation gate → [Stage 3] Weight-based sorting → 3 bins
 ```
 
-| 단계 | 역할 | 센서 | 액추에이터 | 보드 |
+| Stage | Role | Sensors | Actuators | Board |
 |---|---|---|---|---|
-| 1. 컨베이어 | 물체를 하나씩 다음 단계로 이송 | HC-SR04 초음파 ×2 | 연속회전 서보 ×1 | Uno #1 |
-| 2. 금속 분리 | 금속(캔)과 비금속 분기 | 유도형 근접센서 ×1, HC-SR04 ×1* | 서보 ×2 (투입문·분기) | Uno #2 |
-| 3. 무게 분류 | 무게로 유리/플라스틱 구분 | HX711 + 로드셀 | 서보 ×2 (회전·배출) | Uno #3 |
+| 1. Conveyor | Feeds items one at a time to the next stage | 2× HC-SR04 ultrasonic | 1× continuous-rotation servo | Uno #1 |
+| 2. Metal separation | Splits metal (cans) from non-metal | 1× inductive proximity sensor, 1× HC-SR04* | 2× servos (inlet door, diverter) | Uno #2 |
+| 3. Weight sorting | Separates glass from plastic by weight | HX711 + load cell | 2× servos (rotate, dump) | Uno #3 |
 
-\* 2단계 초음파 게이트는 초안 설계에 있었으나 구조 간섭으로 최종 기체에서는 제외했습니다.
+\* The Stage 2 ultrasonic gate was part of the initial design but was dropped from the final build due to mechanical interference.
 
-각 단계 동작 (당시 기록 기준):
+How each stage works (as recorded at the time):
 
-- **1단계**: 초음파 2개가 모두 기준 거리 안에서 물체를 감지하면 벨트를 구동해
-  물체를 하나씩 떨어뜨립니다. 여러 개를 한 번에 올려도 직렬화되도록 한 설계입니다.
-- **2단계**: 투입구 접근 시 문이 열리고, 유도형 근접센서가 와전류 방식으로 금속
-  여부를 감지해 분기 서보가 경로를 바꿉니다.
-- **3단계**: 로드셀 측정값이 1.0 초과면 무거움(유리) 칸, 0.5 초과 1.0 이하이면
-  가벼움(플라스틱) 칸으로 회전·배출 서보가 분류합니다.
+- **Stage 1**: When both ultrasonic sensors detect an object within their thresholds,
+  the belt runs and drops items one at a time — designed so that several items placed
+  at once still get serialized.
+- **Stage 2**: The inlet door opens when an object approaches, and the inductive
+  proximity sensor detects metal via eddy currents; a diverter servo switches the path.
+- **Stage 3**: A load-cell reading above 1.0 sends the item to the heavy (glass) bin;
+  a reading above 0.5 and up to 1.0 sends it to the light (plastic) bin.
 
-세 보드는 서로 통신하지 않고 독립 동작하며, 단계 간 타이밍은 지연(delay)으로
-맞췄습니다. 이 선택의 비용과 대안은 [docs/code-review.md](docs/code-review.md)에
-정리했습니다.
+The three boards run independently with no communication between them; inter-stage
+timing relies on delays. The cost of that choice, and the alternatives, are covered
+in [docs/code-review.md](docs/code-review.md).
 
-## 펌웨어
+## Firmware
 
-| 폴더 | 설명 |
+| Folder | Description |
 |---|---|
-| [`firmware/original/`](firmware/original) | 대회 당시 코드 기록 (그대로 보존) |
-| [`firmware/revised/`](firmware/revised) | 로직은 유지하고 컴파일 가능하게 정리한 버전 |
+| [`firmware/original/`](firmware/original) | Code as written at the time (preserved verbatim, Korean comments) |
+| [`firmware/revised/`](firmware/revised) | Cleaned-up version — same logic, made compilable |
 
-original 보존 상태:
+Preservation status of the originals:
 
-- `stage1_conveyor` — 당시 제출본, 컴파일 가능
-- `stage2_metal_sorter` — 본인 작성 초안. 변수명 불일치로 컴파일 불가 (대회에서
-  동작한 최종본은 팀원이 완성, 기록 유실)
-- `stage3_weight_sorter` — 기록 원문이 끊겨 끝부분(닫는 중괄호) 유실
+- `stage1_conveyor` — as submitted; compiles
+- `stage2_metal_sorter` — my draft; does not compile due to identifier mismatches
+  (the final working version was completed by a teammate and its record is lost)
+- `stage3_weight_sorter` — the source record was cut off, losing the closing brace
 
-revised는 동작 로직을 그대로 두고 컴파일 오류 수정, `pulseIn` 타임아웃, 상수화,
-주석 보강, HC-SR04 트리거 절차 보완만 적용했습니다(변경 내역은 각 파일 상단 주석 참고). 3단계는 HX711
-라이브러리(bogde)가 필요합니다. 세 스케치 모두 arduino-cli(arduino:avr:uno)로
-컴파일을 확인했습니다.
+The revised sketches keep the original behavior and only apply compile fixes,
+`pulseIn` timeouts, named constants, comment improvements, and HC-SR04
+trigger-procedure corrections (see each file's header for the change list). Stage 3
+requires the HX711 library (bogde). All three sketches are compile-verified with
+arduino-cli (arduino:avr:uno).
 
-## 맡은 역할 (팀 프로젝트)
+## My Role (Team Project)
 
-- **본인**: 자료조사, 시스템 설계, 펌웨어 작성(우노 3대), 구조물 제작, 재료 수급,
-  발표 자료 제작(1·2·4·5·6주차), 발표(1~7주차 및 나노데이 대회 시연 발표)
-- **팀원**: 재료 수급, 무게 평균값 측정 데이터 수집, 구조물 제작, 2단계 펌웨어
-  최종본 완성, 포스터 제작
+- **Me**: research, system design, firmware for all three Unos, structure building,
+  sourcing materials, presentation slides (weeks 1, 2, 4–6), presentations (weeks 1–7
+  and the Nano Day competition demo)
+- **Teammates**: sourcing materials, collecting average-weight measurements, structure
+  building, completing the final Stage 2 firmware, poster design
 
-## 한계와 개선 방향
+## Limitations and Future Work
 
-1. **종이 분류 불가** — 분광 방식 재질 센서는 고가라 제외. 이미지 센서 + CNN이
-   현실적 대안 (ESP32-CAM + TensorFlow Lite로 저비용 구현 가능)
-2. **형상 불균일** — 한 가지 형상만 안정 통과하는 구조. 투입 전 압축 기구로 형상
-   정규화 필요
-3. **복합 재질** — 상단만 금속인 플라스틱 캔은 낙하 자세에 따라 분류가 갈림
-4. **내용물 있는 용기** — 음료가 남은 페트병은 무게 때문에 유리로 오분류
-5. **대형 페트병** — 단일 크기 기준 구조라 미지원. 크기별 투입 경로로 확장 가능
-6. **동시 다중 투입** — 컨베이어로 직렬화하는 설계였으나 낙하 타이밍 조정 미완
+1. **Cannot classify paper** — spectroscopic material sensors were too expensive; an
+   image sensor + CNN is the realistic alternative (cheap to build with ESP32-CAM +
+   TensorFlow Lite)
+2. **Shape variance** — the structure reliably handles only one shape; a compactor at
+   the inlet would normalize shapes
+3. **Mixed materials** — plastic cans with metal tops sort randomly depending on how
+   they fall
+4. **Containers with leftover liquid** — misclassified as glass due to weight
+5. **Large PET bottles** — unsupported by the single-size design; per-size inlet paths
+   could extend it
+6. **Multiple simultaneous inputs** — the conveyor was designed to serialize them, but
+   drop-timing tuning was unfinished
 
-## 문서
+## Documents
 
-- [회고 — 심사 Q&A와 트러블슈팅](docs/retrospective.md)
-- [코드 리뷰 — 기술 분석과 개선 제안](docs/code-review.md)
-- [참고 자료 모음](docs/references.md)
+- [Retrospective — judges' Q&A and troubleshooting](docs/retrospective.md)
+- [Code review — technical analysis and improvement proposals](docs/code-review.md)
+- [References](docs/references.md)
