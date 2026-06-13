@@ -66,8 +66,8 @@ to set each board's Serial Monitor to the correct baud rate.
 
 The three Unos **operate independently with no inter-board communication**. There is
 no inter-stage synchronization, so if an item arrives while the previous stage is
-still processing, a collision occurs — avoided here by making each stage's delays
-long. It worked, but it was a trade-off that sacrificed both throughput and
+still processing, a collision can occur; this was avoided by padding each stage with
+long delays. It worked, but it was a trade-off that sacrificed both throughput and
 reliability.
 
 ## Improvement Roadmap (priority order)

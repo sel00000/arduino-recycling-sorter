@@ -45,7 +45,7 @@ in [docs/code-review.md](docs/code-review.md).
 | Folder | Description |
 |---|---|
 | [`firmware/original/`](firmware/original) | Code as written at the time (preserved verbatim, Korean comments) |
-| [`firmware/revised/`](firmware/revised) | Cleaned-up version — same logic, made compilable |
+| [`firmware/revised/`](firmware/revised) | Cleaned-up version — same logic, fixed to compile |
 
 Preservation status of the originals:
 
@@ -57,8 +57,8 @@ Preservation status of the originals:
 The revised sketches keep the original behavior and only apply compile fixes,
 `pulseIn` timeouts, named constants, comment improvements, and HC-SR04
 trigger-procedure corrections (see each file's header for the change list). Stage 3
-requires the HX711 library (bogde). All three sketches are compile-verified with
-arduino-cli (arduino:avr:uno).
+requires the HX711 library (bogde). All three sketches have been verified to compile
+with arduino-cli (arduino:avr:uno).
 
 ## My Role (Team Project)
 
@@ -77,7 +77,7 @@ arduino-cli (arduino:avr:uno).
    the inlet would normalize shapes
 3. **Mixed materials** — plastic cans with metal tops sort randomly depending on how
    they fall
-4. **Containers with leftover liquid** — misclassified as glass due to weight
+4. **PET bottles with liquid remaining** — misclassified as glass due to the added weight
 5. **Large PET bottles** — unsupported by the single-size design; per-size inlet paths
    could extend it
 6. **Multiple simultaneous inputs** — the conveyor was designed to serialize them, but

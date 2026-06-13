@@ -53,7 +53,7 @@ After a conditional branch, the servos vibrated severely. We worked around it by
 inserting 1-second delays between motions and returning to the home position every
 cycle (the chain of delays in the Stage 3 code is the trace of that workaround).
 Based on research at the time, the likely root cause was insufficient current and a
-missing shared GND from driving MG996R-class servos off the Uno's 5 V pin. The
+missing common GND, both caused by driving MG996R-class servos from the Uno's 5 V pin. The
 standard fix is an external power supply, a common GND, and a decoupling capacitor
 on the power rail.
 
@@ -65,4 +65,4 @@ mechanical interference with the enclosure.
 ### CNN classifier attempt abandoned
 We confirmed that an image sensor could distinguish paper from PET bottles, but the
 integration that would drive the motor based on the classification result did not
-work, so we abandoned it against the competition deadline.
+work, so we dropped it before the competition deadline.
