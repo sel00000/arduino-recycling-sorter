@@ -12,6 +12,14 @@ competition (June 28, 2022).
   <img src="assets/demo.png" alt="Demo at the competition" width="28%">
 </p>
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=H_4M0ptQ-k8">
+    <img src="assets/demo.gif" alt="Recycling sorter in action" width="60%">
+  </a>
+  <br>
+  <em>▶ <a href="https://www.youtube.com/watch?v=H_4M0ptQ-k8">Watch the full 38-second demo on YouTube</a></em>
+</p>
+
 ## System Overview — Three-Stage Sorting Pipeline
 
 ```

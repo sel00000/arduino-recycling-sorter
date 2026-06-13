@@ -11,6 +11,14 @@
   <img src="assets/demo.png" alt="대회 시연 현장" width="28%">
 </p>
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=H_4M0ptQ-k8">
+    <img src="assets/demo.gif" alt="작동 중인 분리수거기" width="60%">
+  </a>
+  <br>
+  <em>▶ <a href="https://www.youtube.com/watch?v=H_4M0ptQ-k8">유튜브에서 전체 데모 영상(38초) 보기</a></em>
+</p>
+
 ## 시스템 구성 — 3단계 분류 파이프라인
 
 ```
