@@ -76,6 +76,8 @@ revised는 동작 로직을 그대로 두고 컴파일 오류 수정, `pulseIn` 
 
 Kyung-Bo Kim, Dong-Gi Lee, Yun-Jeong Jang, Yeeun Kwak 팀 프로젝트입니다.
 
+지도교수: Ki-Ho Han 교수님
+
 ## 한계와 개선 방향
 
 1. **종이 분류 불가** — 분광 방식 재질 센서는 고가라 제외. 이미지 센서 + CNN이
