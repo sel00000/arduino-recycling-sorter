@@ -1,5 +1,6 @@
 /*
- * [Revised] Stage 2 metal separation (inductive proximity sensor)
+ * [Revised] Stage 2 metal separation (capacitive proximity sensor — the original
+ * draft's comments mislabeled it as 유도형/inductive)
  * The original draft (firmware/original/stage2_metal_sorter) did not compile;
  * the following fixes were applied:
  *   - Mixed identifiers senor / sensor / senor_pin → unified as SENSOR_PIN constant
@@ -10,7 +11,7 @@
  *   - Removed writing LOW to echo pin (unnecessary operation on an INPUT pin)
  * All other gate/diverter logic and angle/delay values kept from the draft.
  *
- * Hardware: 1× HC-SR04 ultrasonic (inlet detection), 1× inductive proximity sensor
+ * Hardware: 1× HC-SR04 ultrasonic (inlet detection), 1× capacitive proximity sensor
  *           (digital output), 2× servos
  * Behavior (unchanged from draft): object detected within 10 cm of inlet → door servo
  * to 100° (open), otherwise 180° (closed). Proximity sensor LOW (metal detected) →
@@ -20,7 +21,7 @@
 
 const int TRIG_PIN = 7;
 const int ECHO_PIN = 6;
-const int SENSOR_PIN = 4;      // inductive proximity sensor digital output (NPN: LOW when metal detected)
+const int SENSOR_PIN = 4;      // capacitive proximity sensor digital output (NPN: LOW when an object is detected)
 const int DOOR_SERVO_PIN = 2;  // inlet door
 const int TAP_SERVO_PIN = 5;   // metal / non-metal diverter
 

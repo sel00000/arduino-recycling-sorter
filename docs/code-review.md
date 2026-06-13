@@ -42,8 +42,8 @@ The root cause is the same object being named five different ways: `senor` / `se
    closed on timeout
 2. `if (val==0) {...} if (val==1) {...}` is functionally equivalent to if/else but
    the intent is not clear. → revised: changed to if/else
-3. For inductive proximity sensors, the meaning of `val==0` flips depending on output
-   type (NPN: LOW when metal detected / PNP: HIGH when metal detected), and 24 V
+3. For capacitive proximity sensors, the meaning of `val==0` flips depending on output
+   type (NPN: LOW when an object is detected / PNP: HIGH when detected), and 24 V
    industrial sensors need a voltage divider or level shifter. Wiring documentation
    specific to the module used should have been preserved alongside the code.
 

@@ -29,7 +29,7 @@ Input → [Stage 1] Conveyor belt → [Stage 2] Metal separation gate → [Stage
 | Stage | Role | Sensors | Actuators | Board |
 |---|---|---|---|---|
 | 1. Conveyor | Feeds items one at a time to the next stage | 2× HC-SR04 ultrasonic | 1× continuous-rotation servo | Uno #1 |
-| 2. Metal separation | Splits metal (cans) from non-metal | 1× inductive proximity sensor, 1× HC-SR04* | 2× servos (inlet door, diverter) | Uno #2 |
+| 2. Metal separation | Splits metal (cans) from non-metal | 1× capacitive proximity sensor, 1× HC-SR04* | 2× servos (inlet door, diverter) | Uno #2 |
 | 3. Weight sorting | Separates glass from plastic by weight | HX711 + load cell | 2× servos (rotate, dump) | Uno #3 |
 
 \* The Stage 2 ultrasonic gate was part of the initial design but was dropped from the final build due to mechanical interference.
@@ -39,10 +39,18 @@ How each stage works (as recorded at the time):
 - **Stage 1**: When both ultrasonic sensors detect an object within their thresholds,
   the belt runs and drops items one at a time — designed so that several items placed
   at once still get serialized.
-- **Stage 2**: The inlet door opens when an object approaches, and the inductive
-  proximity sensor detects metal via eddy currents; a diverter servo switches the path.
+- **Stage 2**: The inlet door opens when an object approaches, and a capacitive
+  proximity sensor detects the item; a diverter servo switches the path.
 - **Stage 3**: A load-cell reading above 1.0 sends the item to the heavy (glass) bin;
   a reading above 0.5 and up to 1.0 sends it to the light (plastic) bin.
+
+> **Why a capacitive proximity sensor?** It works like one plate of a capacitor: an
+> object entering the sensor's electric field changes the capacitance — through its
+> dielectric constant (non-conductors) or conductivity (metals, water) — which shifts an
+> internal oscillator that the sensor thresholds into a contactless on/off output.
+> Unlike an inductive sensor (which responds to metal only), it reacts to both
+> conductive and high-dielectric materials; as tuned in this build it flagged metal cans
+> and liquids while ignoring empty dry plastic, transparent, and opaque items.
 
 The three boards run independently with no communication between them; inter-stage
 timing relies on delays. The cost of that choice, and the alternatives, are covered
@@ -71,6 +79,8 @@ with arduino-cli (arduino:avr:uno).
 ## Team
 
 A team project by Kyung-Bo Kim, Dong-Gi Lee, Yun-Jeong Jang, and Yeeun Kwak.
+
+Advisor: Prof. Ki-Ho Han
 
 ## Limitations and Future Work
 
