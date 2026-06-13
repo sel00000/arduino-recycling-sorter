@@ -68,13 +68,9 @@ trigger-procedure corrections (see each file's header for the change list). Stag
 requires the HX711 library (bogde). All three sketches have been verified to compile
 with arduino-cli (arduino:avr:uno).
 
-## My Role (Team Project)
+## Team
 
-- **Me**: research, system design, firmware for all three Unos, structure building,
-  sourcing materials, presentation slides (weeks 1, 2, 4–6), presentations (weeks 1–7
-  and the Nano Day competition demo)
-- **Teammates**: sourcing materials, collecting average-weight measurements, structure
-  building, completing the final Stage 2 firmware, poster design
+A team project by Kyung-Bo Kim, Dong-Gi Lee, Yun-Jeong Jang, and Yeeun Kwak.
 
 ## Limitations and Future Work
 
